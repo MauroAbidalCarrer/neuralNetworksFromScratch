@@ -5,6 +5,7 @@ from nnfs.datasets import spiral_data
 # Sets the random seed to 0 and does some other stuff to make the output repetable
 nnfs.init()
 from activation_functions import *
+from plot import *
 
 
 class Layer:
@@ -35,6 +36,8 @@ class Layer:
 
 # Create dataset
 samples, targets = spiral_data(samples=100, classes=3)
+
+# plot_samples(samples, targets)
 
 layer1 = Layer(2, 3, Relu)
 # print(X.__len__())
