@@ -7,8 +7,6 @@ nnfs.init()
 class Layer:
 
     def __init__(self, input_size, nb_neurons, activation_function):
-        self.nb_inputs = input_size
-        self.nb_neurons = nb_neurons
         # Create a matrix of shape(nb_neurons, nb_inputs) with random values.
         # Since we are using batches of inputs and performing matrix multiplication on them and that
         # because matMul performs the dot product on the rows of the first matrix and the columms of the second instead of row/row,
