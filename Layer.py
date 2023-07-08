@@ -1,12 +1,8 @@
-import sys
 import numpy as np
 import nnfs
 from nnfs.datasets import spiral_data
-# Sets the random seed to 0 and does some other stuff to make the output repetable
+# Sets the random seed to 0 and does some other stuff to make the output repetable...
 nnfs.init()
-from activation_functions import *
-from plot import *
-
 
 class Layer:
 
@@ -29,20 +25,3 @@ class Layer:
                                                                             # No need to transpose the weight matrix since its shape is (input_size, nb_neurons).
         self.output = self.output + self.biases                             # Add the biases on each row/input.
         self.output = self.activation_function.forward(self.output)         # Apply the activation function.
-
-
-
-#main
-
-# Create dataset
-samples, targets = spiral_data(samples=100, classes=3)
-
-# plot_samples(samples, targets)
-
-layer1 = Layer(2, 3, Relu)
-# print(X.__len__())
-layer1.forward_pass(samples)
-# print(layer1.output)
-layer2 = Layer(3, 3, SoftMax)
-layer2.forward_pass(layer1.output)
-print(layer2.output)
