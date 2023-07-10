@@ -1,18 +1,18 @@
 import numpy as np
 import nnfs
-# from nnfs.datasets import spiral_data
-
 # Sets the random seed to 0 and does some other stuff to make the output repetable
 nnfs.init()
 
+
 class Relu:
 
-    def forward(inputs):
-        return np.maximum(0, inputs)
-    
+    def forward(self, inputs):
+        self.outputs = np.maximum(0, inputs)
+        return self.outputs
+
 class SoftMax:
 
-    def forward(inputs):
+    def forward(self, inputs):
         # exponantiate the input.
         exp_inputs = np.exp(inputs)                                     
         # Devide it by its sum.
@@ -21,4 +21,7 @@ class SoftMax:
         # - "keepdims=True" specifies that we want the result to keep the same number of dimensions(but not the same shape).
         # This way we get a matrix as output of the sum instead of a vector.
         # Having a matrix of shape (nb_inputs, 1) allows us to use it as denomintor for exp_inputs which is also a matrix.
-        return exp_inputs / np.sum(exp_inputs, axis=1, keepdims=True)   
+        self.outputs = exp_inputs / np.sum(exp_inputs, axis=1, keepdims=True)
+        return self.outputs
+    
+    # def calculate_gradient(self, prev_grad):

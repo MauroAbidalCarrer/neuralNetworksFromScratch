@@ -1,8 +1,0 @@
-Because the SoftMax takes in a vector and outputs a vector where each component of the output is dependant on each input, 
-the gradient of the SoftMax is a matrix.
-More specifically, a Jacobian Matrix.(I really hope I don't forget all of this in a month...)
-
-L = vector size
-i = sample index
-j = output/neuron index that we want to calculate the derivative of
-k = input sample index that we want to calculate the derivative with respect to
