@@ -3,15 +3,20 @@ import nnfs
 # Sets the random seed to 0 and does some other stuff to make the output repetable
 nnfs.init()
 
-
 class Relu:
 
     def forward(self, inputs):
+        self.inputs = inputs
         self.outputs = np.maximum(0, inputs)
         return self.outputs
 
-class SoftMax:
+    def backward(self, output_gradients):
+        self.inputs_gradients = output_gradients.copy()
+        self.inputs_gradients[self.inputs <= 0] = 0
 
+
+
+class SoftMax:
     def forward(self, inputs):
         # exponantiate the input.
         exp_inputs = np.exp(inputs)                                     
