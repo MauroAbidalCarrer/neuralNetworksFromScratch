@@ -38,11 +38,35 @@ i2 = 3
 bias = 1
 
 # neuron output written as a series of atomic operations
-neuron_output = relu(bias + (w0 * i0) + (w1 * i1) + (w2 * i2))
+neuron_output = relu(sum(bias, w0, i0, w1, i1, w2, i2))
+neuron_output = 6
 
-#derivative of the loss function w.r.t the neuron output
+# derivative value of the loss function w.r.t the neuron output
+# (i.e if we increased the output by one, the loss would increase by one)
 d_neuron_output = 1
 
-#derivative of the loss function w.r.t w0
-d_w0 = relu`(bias + (w0 * i0) + (w1 * i1) + (w2 * i2))
+# derivative value of the loss function w.r.t w0
+d_w0 =  relu`(sum(bias, mul(w0, i0), mul(w1, i1), mul(w2, i2)) * 
+        sum`(bias, mul(w0, i0), mul(w1, i1), mul(w2, i2) * 
+        mul`(w0, i0) *
+        d_neuron_output
+
+# Now that we know how to calculate the derivative value of the loss function w.r.t w0, we just need to cacluate the dreivatives.  
+
+# relu(x) = (x if x > 0 else 0) therefore:
+relu`(x) = (1. if x > 0 else 0)
+
+# The partial derivative function of the sum w.r.t one of its inputs is always 1.
+sum`(x) = 1
+
+# The partial derivative function of the multiplication w.r.t one of its input(a) is always equal to the other input(b).
+mul`(x) = b
+
+# Therefore we can simplify the derivative value of the loss function w.r.t w0 equation to:
+d_w0 =  (1 if sum(bias, mul(w0, i0), mul(w1, i1), mul(w2, i2)) > 0 else 9) *
+        1 *
+        i0 *
+        d_neuron_output
+
+d_w0 =  1 * 1 * 1 * 1 # How convinient...
 ```
