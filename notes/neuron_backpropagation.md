@@ -46,10 +46,10 @@ sum`(x) = 1
 mul`(x) = b
 
 # Therefore we can simplify the derivative value of the loss function w.r.t w0 equation to:
-d_w0 =  (1 if sum(bias, mul(w0, i0), mul(w1, i1), mul(w2, i2)) > 0 else 9) *
+d_w0 =  d_neuron_output *
+        (1 if sum(bias, mul(w0, i0), mul(w1, i1), mul(w2, i2)) > 0 else 9) *
         1 *
-        i0 *
-        d_neuron_output
+        i0
 
 d_w0 = 1 * 1 * 1 * 1 # How convinient...
 d_w0 = 1
@@ -57,7 +57,6 @@ d_w0 = 1
 
 
 Now that we know how to calculate the partial derivative of a weight, lets caculate the gradient of the weights.  
-
 
 ```python
 
@@ -69,6 +68,25 @@ d_neuron_output
 
 neuron_output = 6
 
-d_weights = f
+d_weights =     d_neuron_output *
+                relu`(sum(bias, dot(input, weights))) *
+                sum`(bias, dot(input, weights)) *
+                dot`(inputs, weights)
 
+# The dot product is a mul of the two vectors and then a sum of all of the product's components 
+d_weights =     d_neuron_output *
+                relu`(sum(bias, dot(input, weights))) *
+                sum`(bias, dot(input, weights)) *
+                sum_of_components`(mul(inputs, weights)) *     #sum of the components of the dot products
+                mul`(inputs, weights) *                        #mul of the dot product
+                
+d_weights =     d_neuron_output *
+                (1 if sum(bias, dot(input, weights)) > 0 else 0) *
+                1 *
+                1 *                                   #sum of the components of the dot products
+                inputs                                #mul of the dot product
+
+d_bias = d_neuron_output *
+         (1 if sum(bias, dot(input, weights)) > 0 else 0) *
+         1
 ```
