@@ -2,7 +2,6 @@ import numpy as np
 import nnfs
 # Sets the random seed to 0 and does some other stuff to make the output repetable...
 nnfs.init()
-from nnfs.datasets import spiral_data
 
 class Layer:
 
@@ -15,7 +14,7 @@ class Layer:
         self.weights = np.random.randn(input_size, nb_neurons)
         # The parameter of the funciton is in parenthesis because it is a tuple of size one.
         # print(self.weights)
-        self.biases = np.zeros((nb_neurons))
+        self.biases = np.zeros((1, nb_neurons))
 
     def forward(self, inputs):
         self.inputs = inputs
@@ -30,7 +29,7 @@ class Layer:
         self.weights_gradient = np.dot(self.inputs.T, output_gradients)
         # print('self.inputs.T[:, :3]:\n', self.inputs.T[:, :3])
         # print('output_gradients[:3]:\n', output_gradients[:3])
-        print()
         self.biases_gradient = np.sum(output_gradients, axis=0, keepdims=True)
+        # print('self.biases_gradient.shape: ', self.biases_gradient.shape)
         # Gradient on values
         self.inputs_gradients = np.dot(output_gradients, self.weights.T)

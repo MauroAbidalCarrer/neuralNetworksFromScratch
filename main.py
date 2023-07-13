@@ -7,6 +7,7 @@ from activation_functions import *
 from Layer import *
 from plot import *
 from Softmax_And_Categroical_Loss import *
+from SGD import *
 
 # Create dataset represented as a tuple of 2D sample vectors and categorical labels targets.
 nb_classes = 3
@@ -29,36 +30,64 @@ samples, categorical_labels = spiral_data(samples=100, classes=nb_classes)
 # 'labels' array into a one-hot encoded 2D array.
 one_hot_targets = np.eye(nb_classes)[categorical_labels]
 
+# plot_samples(samples, categorical_labels)
 
 # Define the layers of the network and the function that will calculate the loss.
-layer1 = Layer(2, 3)
+layer1 = Layer(2, 64)
 activation1 = Relu()
-layer2 = Layer(3, 3)
-# activation2 = SoftMax()
+layer2 = Layer(64, 3)
 last_activation_and_loss = Softmax_and_Categorical_loss()
-# loss_function = Categorical_cross_entropy_loss()
 
-# forward pass
-layer1.forward(samples)
+
+
+# Generate a grid of points (replace the ranges as necessary)
+x = np.linspace(-10, 10, 100)
+y = np.linspace(-10, 10, 100)
+X, Y = np.meshgrid(x, y)
+bg_samples = np.array(np.c_[X.ravel(), Y.ravel()])
+
+print('bg_samples.shape: ', bg_samples.shape)
+print('samples.shape: ', samples.shape)
+
+layer1.forward(bg_samples)
 activation1.forward(layer1.outputs)
 layer2.forward(activation1.outputs)
-# activation2.forward(layer2.outputs)
-# loss_function.calculate_average_loss()
 last_activation_and_loss.forward(layer2.outputs, categorical_labels)
-# print("outputs:\n", last_activation_and_loss.activation.outputs[:5])
 
-# backward pass
-last_activation_and_loss.backward(last_activation_and_loss.activation.outputs, categorical_labels)
-layer2.backward(last_activation_and_loss.input_gradients)
-activation1.backward(layer2.inputs_gradients)
-layer1.backward(activation1.inputs_gradients)
+bg_targets = last_activation_and_loss.activation.outputs
+
+bg_targets = np.argmax(bg_targets, axis=1)
+
+# Round to nearest integer if your neural network outputs probabilities
+bg_targets = np.round(bg_targets).astype(int)
+
+# Plot the actual data and the background
+plot_samples(samples, categorical_labels, bg_samples, bg_targets)
 
 
-print("last_activation_and_loss.activation.outputs.shape: ", last_activation_and_loss.activation.outputs.shape)
-print("last_activation_and_loss.inputs_gradients.shape: ", last_activation_and_loss.input_gradients.shape)
-print('gradients:')
-print('\nloss and activation gradient:\n', last_activation_and_loss.input_gradients[:5])
-print('\nlayer1 weights gradient:\n', layer1.weights_gradient)
-print('\nlayer1 biases gradient:\n', layer1.biases_gradient)
-print('\nlayer2 weights gradient:\n', layer2.weights_gradient)
-print('\nlayer2 biases gradient:\n', layer2.biases_gradient)
+
+
+optimizer = SGD_Optimizer(Learning_rate=1)
+
+nb_epochs = 10001
+
+for epoch in range(nb_epochs): 
+
+    # forward pass
+    layer1.forward(samples)
+    activation1.forward(layer1.outputs)
+    layer2.forward(activation1.outputs)
+    last_activation_and_loss.forward(layer2.outputs, categorical_labels)
+
+    # backward pass
+    last_activation_and_loss.backward(last_activation_and_loss.activation.outputs, categorical_labels)
+    layer2.backward(last_activation_and_loss.input_gradients)
+    activation1.backward(layer2.inputs_gradients)
+    layer1.backward(activation1.inputs_gradients)
+
+    # Optimization
+    optimizer.update_layer_params(layer1)
+    optimizer.update_layer_params(layer2)
+    # if not epoch % 1000:
+
+print('Loss: ', np.mean(last_activation_and_loss.loss.losses))
