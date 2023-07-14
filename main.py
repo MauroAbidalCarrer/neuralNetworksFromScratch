@@ -30,15 +30,46 @@ samples, categorical_labels = spiral_data(samples=100, classes=nb_classes)
 # 'labels' array into a one-hot encoded 2D array.
 one_hot_targets = np.eye(nb_classes)[categorical_labels]
 
+# plot_samples(samples, categorical_labels)
 
 # Define the layers of the network and the function that will calculate the loss.
 layer1 = Layer(2, 64)
 activation1 = Relu()
 layer2 = Layer(64, 3)
 last_activation_and_loss = Softmax_and_Categorical_loss()
-optimizer = SGD_Optimizer(Learning_rate=0.1)
 
-nb_epochs = 100001
+
+
+# Generate a grid of points (replace the ranges as necessary)
+x = np.linspace(-10, 10, 100)
+y = np.linspace(-10, 10, 100)
+X, Y = np.meshgrid(x, y)
+bg_samples = np.array(np.c_[X.ravel(), Y.ravel()])
+
+print('bg_samples.shape: ', bg_samples.shape)
+print('samples.shape: ', samples.shape)
+
+layer1.forward(bg_samples)
+activation1.forward(layer1.outputs)
+layer2.forward(activation1.outputs)
+last_activation_and_loss.forward(layer2.outputs, categorical_labels)
+
+bg_targets = last_activation_and_loss.activation.outputs
+
+bg_targets = np.argmax(bg_targets, axis=1)
+
+# Round to nearest integer if your neural network outputs probabilities
+bg_targets = np.round(bg_targets).astype(int)
+
+# Plot the actual data and the background
+plot_samples(samples, categorical_labels, bg_samples, bg_targets)
+
+
+
+
+optimizer = SGD_Optimizer(Learning_rate=1)
+
+nb_epochs = 10001
 
 for epoch in range(nb_epochs): 
 
@@ -57,6 +88,6 @@ for epoch in range(nb_epochs):
     # Optimization
     optimizer.update_layer_params(layer1)
     optimizer.update_layer_params(layer2)
-
     # if not epoch % 1000:
+
 print('Loss: ', np.mean(last_activation_and_loss.loss.losses))
