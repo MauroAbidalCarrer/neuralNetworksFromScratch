@@ -16,6 +16,7 @@ class Categorical_cross_entropy_loss(Loss):
         # we also need to clip the max value from 1, down to 1 - 1e-7 so the average doesn't get affected.
         clipped_outputs = np.clip(nn_ouputs, 1e-7, 1 - 1e-7)                        
         # Get a vector of all the confidences outputed by the NN of the targeted output.
+        # print('nn_ouputs.shape: ', nn_ouputs.shape, ', categorical_labels: ', categorical_labels.shape)
         target_confidences = clipped_outputs[range(len(nn_ouputs)), categorical_labels] 
         self.losses = -np.log(target_confidences)
         return self.losses

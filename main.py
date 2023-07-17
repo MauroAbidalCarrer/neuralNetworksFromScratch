@@ -41,28 +41,26 @@ last_activation_and_loss = Softmax_and_Categorical_loss()
 
 
 # Generate a grid of points (replace the ranges as necessary)
-x = np.linspace(-10, 10, 100)
-y = np.linspace(-10, 10, 100)
+x = np.linspace(-1, 1, 50)
+y = np.linspace(-1, 1, 50)
 X, Y = np.meshgrid(x, y)
 bg_samples = np.array(np.c_[X.ravel(), Y.ravel()])
 
-print('bg_samples.shape: ', bg_samples.shape)
-print('samples.shape: ', samples.shape)
+def draw_decision_boundary():
+    #forward pass
+    layer1.forward(bg_samples)
+    activation1.forward(layer1.outputs)
+    layer2.forward(activation1.outputs)
+    last_activation_and_loss.activation.forward(layer2.outputs)
 
-layer1.forward(bg_samples)
-activation1.forward(layer1.outputs)
-layer2.forward(activation1.outputs)
-last_activation_and_loss.forward(layer2.outputs, categorical_labels)
-
-bg_targets = last_activation_and_loss.activation.outputs
-
-bg_targets = np.argmax(bg_targets, axis=1)
-
-# Round to nearest integer if your neural network outputs probabilities
-bg_targets = np.round(bg_targets).astype(int)
-
-# Plot the actual data and the background
-plot_samples(samples, categorical_labels, bg_samples, bg_targets)
+    one_hot_bg_outputs = last_activation_and_loss.activation.outputs
+    categorical_bg_outputs = np.argmax(one_hot_bg_outputs, axis=1)
+    # Round to nearest integer if your neural network outputs probabilities
+    categorical_bg_outputs = np.round(categorical_bg_outputs).astype(int)
+    # Plot the actual data and the background
+    print('updating plot')
+    plot_samples(samples, categorical_labels, bg_samples, categorical_bg_outputs, X, Y)
+    print('updated plot')
 
 
 
@@ -88,6 +86,7 @@ for epoch in range(nb_epochs):
     # Optimization
     optimizer.update_layer_params(layer1)
     optimizer.update_layer_params(layer2)
-    # if not epoch % 1000:
+    if not epoch % 1000:
+        draw_decision_boundary()
 
 print('Loss: ', np.mean(last_activation_and_loss.loss.losses))
