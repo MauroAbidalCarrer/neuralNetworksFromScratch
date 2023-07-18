@@ -64,9 +64,8 @@ def draw_decision_boundary():
 
 
 
-
-optimizer = SGD_Optimizer(Learning_rate=1)
-
+# Training
+optimizer = SGD_Optimizer(learning_rate=1)
 nb_epochs = 10001
 
 for epoch in range(nb_epochs): 
@@ -84,9 +83,22 @@ for epoch in range(nb_epochs):
     layer1.backward(activation1.inputs_gradients)
 
     # Optimization
+    optimizer.pre_update_layer_params()
+
     optimizer.update_layer_params(layer1)
     optimizer.update_layer_params(layer2)
-    if not epoch % 1000:
-        draw_decision_boundary()
 
-print('Loss: ', np.mean(last_activation_and_loss.loss.losses))
+    optimizer.post_update_layer_params()
+    
+    # if not epoch % 1000:
+    #     draw_decision_boundary()
+
+print('Final loss: ', np.mean(last_activation_and_loss.loss.losses))
+# Reduce the outputs to a one dimension array where we retain the index of the biggest confidence of each row.
+categorical_NN_outputs = np.argmax(last_activation_and_loss.activation.outputs, axis=1)
+# Makes an aray where each element is True if the guessed index matched the expected index, false otherwise.
+succesfull_guesses = categorical_labels == categorical_NN_outputs
+# print('succesfull_guesses: ', succesfull_guesses)
+# np.mean of an array of booleans considers every True as one and every zero as false.
+accuracy = np.mean(succesfull_guesses)
+print('Final accuracy: ', accuracy)

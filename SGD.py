@@ -5,15 +5,18 @@ nnfs.init()
 
 class SGD_Optimizer:
 
-    def __init__(self, Learning_rate=1):
-        self.Learning_rate = Learning_rate
+    def __init__(self, learning_rate=1, decay_rate=0.):
+        self.learning_rate = learning_rate
+        self.decay_rate = decay_rate
+        self.nb_update_iterations = 0
+
+    def pre_update_layer_params(self):
+        if (self.decay_rate):
+            self.learning_rate = 1 / (self.decay_rate * self.nb_update_iterations)
 
     def update_layer_params(self, layer): 
-        # print('Optimization:')
-        # print('layer.weights.shape: ', layer.weights.shape, ', layer.weights_gradient.shape: ', layer.weights_gradient.shape)
-        layer.weights -= self.Learning_rate * layer.weights_gradient
-        # biasses_offset = layer.biases_gradient
-        # print('layer.biases_gradient.shape: ', layer.biases_gradient.shape)
-        # print('layer.biases.shape: ', layer.biases.shape)
-        # layer.biases -= biasses_offset
-        layer.biases -= self.Learning_rate * layer.biases_gradient
+        layer.weights -= self.learning_rate * layer.weights_gradient
+        layer.biases -= self.learning_rate * layer.biases_gradient
+
+    def post_update_layer_params(self):
+        self.nb_update_iterations += 1
