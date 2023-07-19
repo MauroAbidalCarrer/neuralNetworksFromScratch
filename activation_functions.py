@@ -27,7 +27,7 @@ class SoftMax:
         # exponantiate the input.
         # Clip inputs to log of float max to prevent overflow when exponentiating the inputs
         # inputs = np.clip(inputs, -sys.float_info.max, np.log(sys.float_info.max))
-        exp_inputs = np.exp(inputs)
+        exp_inputs = np.exp(inputs - np.max(inputs, axis=1, keepdims=True))
         # Devide it by its sum.
         # Since we are using a batch if imputs (i.e a matrix) we use the following parameters for sum: 
         # - "axis=1" specifies that we want to add only the components of the vectors.
