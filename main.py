@@ -8,6 +8,7 @@ from Layer import *
 from plot import *
 from Softmax_And_Categroical_Loss import *
 from SGD import *
+from AdaptiveGradient import *
 
 # Create dataset represented as a tuple of 2D sample vectors and categorical labels targets.
 nb_classes = 3
@@ -61,10 +62,10 @@ def draw_decision_boundary():
     plot_samples(samples, categorical_labels, bg_samples, categorical_bg_outputs, X, Y)
 
 
-
 logs_file = open('logs.txt', '+a')
 # Training
 optimizer = SGD_Optimizer(learning_rate=1, decay_rate=1e-3, momentum=0.03, logs_file=logs_file)
+# optimizer = AdaGrad_Optimizer(learning_rate=1, decay_rate=1e-3, logs_file=logs_file)
 nb_epochs = 10001
 
 for epoch in range(nb_epochs): 
