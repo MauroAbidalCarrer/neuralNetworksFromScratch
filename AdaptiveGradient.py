@@ -12,7 +12,7 @@ class AdaGrad_Optimizer:
         self.decay_rate = decay_rate
         self.nb_update_iterations = 0
         # Debugging
-        debug_str = 'Optimizer hyper parameters:\n'
+        debug_str = 'Optimizer: ' + self.__class__.__name__ + '\n'
         debug_str += 'learning rate:\t\t' + str(learning_rate) + '\n'
         debug_str += 'learning_decay_rate:\t' + str(decay_rate) + '\n'
         print(debug_str, end="")

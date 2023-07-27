@@ -12,7 +12,7 @@ class SGD_Optimizer:
         self.nb_update_iterations = 0
         self.momentum = momentum
         # Debugging
-        debug_str = 'Optimizer hyper parameters:\n'
+        debug_str = 'Optimizer: ' + self.__class__.__name__ + '\n'
         debug_str += 'learning rate:\t\t' + str(learning_rate) + '\n'
         debug_str += 'learning_decay_rate:\t' + str(decay_rate) + '\n'
         debug_str += 'momentum:\t\t' + str(momentum) + '\n\n'
