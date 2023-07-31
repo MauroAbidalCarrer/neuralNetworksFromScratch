@@ -65,19 +65,13 @@ class Adam_Optimizer:
         corrected_biases_gradient_momemtum = self.correct_array(layer.biases_gradient_momemtum, self.momentum_lerp_param)
             
         # Update gradient sum cache.
-        # Step1: multiply the caches by the weights_gradients_sum_cache, effectively keeping only a fraction of it.
-        # layer.weights_gradients_sum_cache = layer.weights_gradients_sum_cache * self.gradient_sum_cache_lerp_param
-        # layer.biases_gradients_sum_cache = layer.biases_gradients_sum_cache * self.gradient_sum_cache_lerp_param
+        # Step1: multiply the caches by the weights_gradients_sum_cache, effectively keeping only a fraction of it
         # # Step2: add the new last gradient to the sum by 1 - weights_gradients_sum_cache, effectively adding only a fraction of it tp the sum.
         # # We update the squared root of the gradient and to get the absolute value of the gradient AND to make the cache grow slower(when getting the squared root) than if we were to simply add the absolute values.
-        # layer.weights_gradients_sum_cache += (1 - self.gradient_sum_cache_lerp_param) * layer.weights_gradient ** 2 
-        # layer.biases_gradients_sum_cache += (1 - self.gradient_sum_cache_lerp_param) * layer.biases_gradient ** 2
         layer.weights_gradients_sum_cache = lerp(layer.weights_gradients_sum_cache, layer.weights_gradient ** 2, self.gradient_sum_cache_lerp_param)
         layer.biases_gradients_sum_cache = lerp(layer.biases_gradients_sum_cache, layer.biases_gradient ** 2, self.gradient_sum_cache_lerp_param)
         
-        # corrected_weights_gradients_sum_cache = layer.weights_gradients_sum_cache / (1 - layer.weights_gradients_sum_cache ** (self.nb_update_iterations + 1))
         corrected_weights_gradients_sum_cache = self.correct_array(layer.weights_gradients_sum_cache, self.gradient_sum_cache_lerp_param)
-        # corrected_biases_gradients_sum_cache = layer.biases_gradients_sum_cache / (1 - layer.weights_gradients_sum_cache ** (self.nb_update_iterations + 1))
         corrected_biases_gradients_sum_cache = self.correct_array(layer.biases_gradients_sum_cache, self.gradient_sum_cache_lerp_param)
         
         # Update layer parameters.SADFSDFASDASad
