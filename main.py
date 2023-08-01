@@ -7,10 +7,8 @@ from activation_functions import *
 from Layer import *
 from plot import *
 from Softmax_And_Categroical_Loss import *
-from SGD import *
-from AdaptiveGradient import *
-from Root_Mean_Square_Propagation import *
 from AdaptiveMomentum import *
+from Dropout_layer import *
 
 
 logs_file = open('logs.txt', '+a')
@@ -38,9 +36,10 @@ training_samples, training_categorical_labels = spiral_data(samples=nb_training_
 one_hot_targets = np.eye(nb_classes)[training_categorical_labels]
 
 # Define the layers of the network and the function that will calculate the loss.
-layer1 = Layer(2, 64, 0, logs_file=logs_file)
+layer1 = Layer(2, 512, 0, logs_file=logs_file)
 activation1 = Relu()
-layer2 = Layer(64, 3, 0)
+dropout_layer = Dropout_Layer(512, 0.1, 0, logs_file=logs_file)
+layer2 = Layer(512, 3, 0)
 last_activation_and_loss = Softmax_and_Categorical_loss()
 
 
@@ -49,21 +48,23 @@ last_activation_and_loss = Softmax_and_Categorical_loss()
 optimizer = Adam_Optimizer(learning_rate=0.05, decay_rate=5e-7, logs_file=logs_file)
 nb_epochs = 10001
 
-def forward_pass(inputs, categorical_labels):
+def training_forward_pass(inputs, categorical_labels):
     # forward pass
     layer1.forward(inputs)
     activation1.forward(layer1.outputs)
-    layer2.forward(activation1.outputs)
+    dropout_layer.forward(activation1.outputs)
+    layer2.forward(dropout_layer.outputs_batch)
     last_activation_and_loss.forward(layer2.outputs, categorical_labels)
 
 
 for epoch in range(nb_epochs): 
-    forward_pass(training_samples, training_categorical_labels)
+    training_forward_pass(training_samples, training_categorical_labels)
 
     # backward pass
     last_activation_and_loss.backward(last_activation_and_loss.activation.outputs, training_categorical_labels)
     layer2.backward(last_activation_and_loss.input_gradients)
-    activation1.backward(layer2.inputs_gradients)
+    dropout_layer.backward(layer2.inputs_gradients)
+    activation1.backward(dropout_layer.inputs_gradients_batch)
     layer1.backward(activation1.inputs_gradients)
 
     # Optimization
@@ -73,6 +74,8 @@ for epoch in range(nb_epochs):
     optimizer.update_layer_params(layer2)
 
     optimizer.post_update_layer_params()
+    if epoch % 100 == 0:
+        print(epoch)
 
 # Debugging
 def calculate_mean_loss():
@@ -89,7 +92,7 @@ debug_str += 'Training accuracy: ' + str(calculate_mean_accuracy(training_catego
 # Measure loss and accuracy on test dataset
 nb_test_samples = 100
 test_samples, test_categorical_labels = spiral_data(samples=nb_test_samples, classes=nb_classes)
-forward_pass(test_samples, test_categorical_labels)
+training_forward_pass(test_samples, test_categorical_labels)
 debug_str += 'nb test samples: ' + str(nb_test_samples) + '\n'
 debug_str += 'Test loss: ' + str(calculate_mean_loss()) + '\n'
 debug_str += 'Test accuracy: ' + str(calculate_mean_accuracy(test_categorical_labels)) + '\n'
