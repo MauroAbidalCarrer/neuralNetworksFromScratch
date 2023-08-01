@@ -5,7 +5,7 @@ nnfs.init()
 
 class Layer:
 
-    def __init__(self, input_size, nb_neurons, debug_layer_index, L1_weights_multiplier=0, L1_biases_multiplier=0, L2_weights_multiplier=0, L2_biases_multiplier=0, logs_file=None):
+    def __init__(self, input_size, nb_neurons):
         # Create a matrix of shape(nb_neurons, nb_inputs) with random values.
         # Since we are using batches of inputs and performing matrix multiplication on them and that
         # because matMul performs the dot product on the rows of the first matrix and the columms of the second instead of row/row,
@@ -15,18 +15,6 @@ class Layer:
         # The parameter of the funciton is in parenthesis because it is a tuple of size one.
         # print(self.weights)
         self.biases = np.zeros((1, nb_neurons))
-        self.L1_weights_multiplier = L1_weights_multiplier
-        self.L1_biases_multiplier = L1_biases_multiplier
-        self.L2_weights_multiplier = L2_weights_multiplier
-        self.L2_biases_multiplier = L2_biases_multiplier
-        if logs_file and (L1_weights_multiplier or L1_biases_multiplier or L2_weights_multiplier or L2_biases_multiplier):
-            debug_str = 'Dense_layer' + str(debug_layer_index) + ':\n'
-            debug_str += '\tL1_weights_multiplier: ' + str(self.L1_weights_multiplier) + '\n'
-            debug_str += '\tL1_biases_multiplier: ' + str(self.L1_biases_multiplier) + '\n'
-            debug_str += '\tL2_weights_multiplier: ' + str(self.L2_weights_multiplier) + '\n'
-            debug_str += '\tL2_biases_multiplier: ' + str(self.L2_biases_multiplier) + '\n'
-            logs_file.write(debug_str)
-            print(debug_str)
 
     def forward(self, inputs):
         self.inputs = inputs
@@ -45,14 +33,3 @@ class Layer:
         # print('self.biases_gradient.shape: ', self.biases_gradient.shape)
         # Gradient on values
         self.inputs_gradients = np.dot(output_gradients, self.weights.T)
-
-        # L1 regularization
-        L1_regularization_weights_matrix = np.ones_like(self.weights)
-        L1_regularization_weights_matrix[self.weights < 0] = -1
-        self.weights_gradient += L1_regularization_weights_matrix * self.L1_weights_multiplier
-        L1_regularization_biases_vector = np.ones_like(self.biases)
-        L1_regularization_biases_vector[self.biases < 0] = -1
-        self.weights_gradient += L1_regularization_biases_vector * self.L1_biases_multiplier
-        # L2 regularization
-        self.weights_gradient += 2 * self.weights * self.L2_weights_multiplier
-        self.biases_gradient += 2 * self.biases * self.L2_weights_multiplier
