@@ -38,7 +38,7 @@ one_hot_targets = np.eye(nb_classes)[training_categorical_labels]
 # Define the layers of the network and the function that will calculate the loss.
 layer1 = Layer(2, 512, 0, logs_file=logs_file)
 activation1 = Relu()
-dropout_layer = Dropout_Layer(512, 0.1, 0, logs_file=logs_file)
+dropout_layer = Dropout_Layer(0.1)
 layer2 = Layer(512, 3, 0)
 last_activation_and_loss = Softmax_and_Categorical_loss()
 
@@ -53,7 +53,7 @@ def training_forward_pass(inputs, categorical_labels):
     layer1.forward(inputs)
     activation1.forward(layer1.outputs)
     dropout_layer.forward(activation1.outputs)
-    layer2.forward(dropout_layer.outputs_batch)
+    layer2.forward(dropout_layer.output)
     last_activation_and_loss.forward(layer2.outputs, categorical_labels)
 
 
@@ -64,7 +64,7 @@ for epoch in range(nb_epochs):
     last_activation_and_loss.backward(last_activation_and_loss.activation.outputs, training_categorical_labels)
     layer2.backward(last_activation_and_loss.input_gradients)
     dropout_layer.backward(layer2.inputs_gradients)
-    activation1.backward(dropout_layer.inputs_gradients_batch)
+    activation1.backward(dropout_layer.dinputs)
     layer1.backward(activation1.inputs_gradients)
 
     # Optimization
