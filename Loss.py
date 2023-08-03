@@ -1,4 +1,5 @@
 import numpy as np
+# import * from Const
 
 class Loss:
     def calculate_average_loss(self, nn_outputs, target_output):
@@ -20,3 +21,9 @@ class Categorical_cross_entropy_loss(Loss):
         target_confidences = clipped_outputs[range(len(nn_ouputs)), categorical_labels] 
         self.losses = -np.log(target_confidences)
         return self.losses
+
+# I sure do like does esoteric terms...
+class Binary_Categorical_cross_entropy_loss(Loss):
+
+    def calculate_loss(self, nn_outputs, expected_outputs):
+        clipped_expected_outputs = np.clip(expected_outputs, )

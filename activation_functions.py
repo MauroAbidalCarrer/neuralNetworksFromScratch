@@ -36,3 +36,12 @@ class SoftMax:
         # Having a matrix of shape (nb_inputs, 1) allows us to use it as denomintor for exp_inputs which is also a matrix.
         self.outputs = exp_inputs / np.sum(exp_inputs, axis=1, keepdims=True)
         return self.outputs
+    
+class Sigmoid:
+    def forward(self, inputs_batch):
+        self.outputs = 1 / (1 + np.exp(-inputs_batch))
+
+    # Backward pass
+    def backward(self, gradients):
+        # Derivative - calculates from output of the sigmoid function
+        self.inputs_gradients = gradients * (1 - self.outputs) * self.outputs
