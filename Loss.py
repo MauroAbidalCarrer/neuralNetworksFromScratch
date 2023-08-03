@@ -2,8 +2,8 @@ import numpy as np
 # import * from Const
 
 class Loss:
-    def calculate_average_loss(self, nn_outputs, target_output):
-        sample_losses = self.calculate(nn_outputs, target_output)
+    def calculate_mean_loss(self, nn_outputs, target_output):
+        sample_losses = self.calculate_loss(nn_outputs, target_output)
         return np.mean(sample_losses)
 
 
@@ -23,7 +23,30 @@ class Categorical_cross_entropy_loss(Loss):
         return self.losses
 
 # I sure do like does esoteric terms...
-class Binary_Categorical_cross_entropy_loss(Loss):
-
+class BinaryCrossEntropy_loss(Loss):
+    # Forward pass
     def calculate_loss(self, nn_outputs, expected_outputs):
-        clipped_expected_outputs = np.clip(expected_outputs, )
+        # Clip data to prevent division by 0
+        # Clip both sides to not drag mean towards any value
+        nn_outputs_clipped = np.clip(nn_outputs, 1e-7, 1 - 1e-7)
+        # Calculate sample-wise loss
+        sample_losses = -(expected_outputs * np.log(nn_outputs_clipped) +
+        (1 - expected_outputs) * np.log(1 - nn_outputs_clipped))
+        sample_losses = np.mean(sample_losses, axis=-1)
+        # Return losses
+        return sample_losses
+        # Backward pass
+
+    def backward(self, nn_outputs, expected_outputs):
+        # print('nn_outputs.shape: ' + str(nn_outputs.shape))
+        # print('expected_outputs.shape: ' + str(expected_outputs.shape))
+        nn_outputs_len = len(nn_outputs)
+        outputs_len = len(nn_outputs[0])
+        # Clip data to prevent division by 0
+        # Clip both sides to not drag mean towards any value
+        clipped_dvalues = np.clip(nn_outputs, 1e-7, 1 - 1e-7)
+        # Calculate gradient
+        self.inputs_gadients = -(expected_outputs / clipped_dvalues -
+        (1 - expected_outputs) / (1 - clipped_dvalues)) / outputs_len
+        # Normalize gradient
+        self.inputs_gadients = self.inputs_gadients / nn_outputs_len
