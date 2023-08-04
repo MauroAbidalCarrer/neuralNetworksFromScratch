@@ -50,3 +50,23 @@ class BinaryCrossEntropy_loss(Loss):
         (1 - expected_outputs) / (1 - clipped_dvalues)) / outputs_len
         # Normalize gradient
         self.inputs_gadients = self.inputs_gadients / nn_outputs_len
+
+class SquaredMean_Loss(Loss):
+
+    def calculate_loss(self, nn_outputs, expected_outputs):
+        # Calculate loss
+        sample_losses = np.mean((expected_outputs - nn_outputs)**2, axis=-1)
+
+        # Return losses
+        return sample_losses
+
+    # Backward pass
+    def backward(self, nn_outputs, expected_outputs):
+        nn_outputs_len = len(nn_outputs)
+        output_len = len(nn_outputs[0])
+        # Gradient on values
+        self.inputs_gadients = -2 * (expected_outputs - nn_outputs) / output_len
+        # Normalize gradient
+        self.inputs_gadients = self.inputs_gadients / nn_outputs_len
+
+        

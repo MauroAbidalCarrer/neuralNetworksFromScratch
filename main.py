@@ -2,7 +2,7 @@ import numpy as np
 import nnfs
 # Sets the random seed to 0 and does some other stuff to make the output repetable
 nnfs.init()
-from nnfs.datasets import spiral_data
+from nnfs.datasets import sine_data
 from activation_functions import *
 from Layer import *
 from plot import *
@@ -18,7 +18,7 @@ logs_file = open('logs.txt', '+a')
 # Create dataset represented as a tuple of 2D sample vectors and categorical labels targets.
 nb_classes = 2
 nb_training_samples = 100
-training_samples, training_categorical_labels = spiral_data(samples=nb_training_samples, classes=nb_classes)
+training_samples, expected_training_values = sine_data()
 # 'np.eye(num_classes)' generates a square matrix (2D array) with the 
 # number of rows and columns equal to 'num_classes'. In this matrix, 
 # the diagonal elements are 1's, and all other elements are 0's. This 
@@ -37,27 +37,18 @@ training_samples, training_categorical_labels = spiral_data(samples=nb_training_
 # 'labels' array into a one-hot encoded 2D array.
 # one_hot_targets = np.eye(nb_classes)[training_categorical_labels]
 
-# Adds another dimension to the array
-# At first the array is an 1D array of ones and zeros
-# With the reshape we leave the size of the first dimension as is by using -1 as the first argument
-# The second(added) dimesion of the array is of size 1.
-# So it's basically making an array of arrays but the second arrays only contain one value.
-# Thus making the shape of the expected outputs match the shapes of the predicted outputs.
-training_binary_labels = training_categorical_labels.reshape(-1, 1)
-print('training_binary_labels.inputs_gadients.shape: ' + str(training_binary_labels.shape))
-
 
 # Define the layers of the network and the function that will calculate the loss.
-layer1 = Layer(2, 64, 0, logs_file=logs_file)
+layer1 = Layer(1, 64, 0)
 activation1 = Relu()
-layer2 = Layer(64, 1, 0)
-# last_activation_and_loss = Softmax_and_Categorical_loss()
-activation2 = Sigmoid()
-loss_function = BinaryCrossEntropy_loss()
+layer2 = Layer(64, 64, 1)
+activation2 = Relu()
+layer3 = Layer(64, 1, 2)
+loss_function = SquaredMean_Loss()
 
 
 # Training
-optimizer = Adam_Optimizer(learning_rate=0.05, decay_rate=5e-7, logs_file=logs_file)
+optimizer = Adam_Optimizer(learning_rate=0.005, decay_rate=1e-3, logs_file=logs_file)
 nb_epochs = 10001
 
 def forward_pass(samples):
@@ -66,15 +57,17 @@ def forward_pass(samples):
     activation1.forward(layer1.outputs)
     layer2.forward(activation1.outputs)
     activation2.forward(layer2.outputs)
+    layer3.forward(activation2.outputs)
+    # activation2.forward(layer2.outputs)
 
 
 for epoch in range(nb_epochs): 
     forward_pass(training_samples)
 
     # backward pass: calculate gradients for the parameters and the inputs of each layer/activation function
-    loss_function.backward(activation2.outputs, training_binary_labels)
-    # print('loss_function.inputs_gadients.shape: ' + str(loss_function.inputs_gadients.shape))
-    activation2.backward(loss_function.inputs_gadients)
+    loss_function.backward(layer3.outputs, expected_training_values)
+    layer3.backward(loss_function.inputs_gadients)
+    activation2.backward(layer3.inputs_gradients)
     layer2.backward(activation2.inputs_gradients)
     activation1.backward(layer2.inputs_gradients)
     layer1.backward(activation1.inputs_gradients)
@@ -84,30 +77,33 @@ for epoch in range(nb_epochs):
 
     optimizer.update_layer_params(layer1)
     optimizer.update_layer_params(layer2)
+    optimizer.update_layer_params(layer3)
 
     optimizer.post_update_layer_params()
 
 # Debugging
 
-def calculate_mean_accuracy(expected_binary_labels):
-    # Calculate accuracy from output of activation2 and targets
-    # Part in the brackets returns a binary mask - array consisting of
-    # True/False values, multiplying it by 1 changes it into array
-    # of 1s and 0s
-    predictions = (activation2.outputs > 0.5) * 1
-    return np.mean(predictions == expected_binary_labels)
+def calculate_mean_accuracy(expected_outputs):
+    # accuracy_margin defines the margin of error allowed for the nn_outputs.
+    # It is relative to the standard deviation of the expected_outputs (np.std(expected_outputs)).
+    # https://en.wikipedia.org/wiki/Standard_deviation
+    # Standard deviation is a measure of how much variation there is in the expected outputs batch.
+    # This is because we want the network to output data that is similar from the training data.
+    accuracy_margin = np.std(expected_outputs) / 250
+    return np.mean(np.abs(expected_outputs - layer3.outputs) <= accuracy_margin)
+
 
 debug_str = 'nb training samples' + str(nb_training_samples) + '\n'
-debug_str += 'Training loss: ' + str(loss_function.calculate_mean_loss(activation2.outputs, training_binary_labels)) + '\n'
-debug_str += 'Training accuracy: ' + str(calculate_mean_accuracy(training_binary_labels)) + '\n'
+debug_str += 'Training loss: ' + str(loss_function.calculate_mean_loss(activation2.outputs, expected_training_values)) + '\n'
+debug_str += 'Training accuracy: ' + str(calculate_mean_accuracy(expected_training_values)) + '\n'
 # Measure loss and accuracy on test dataset
 nb_test_samples = 100
-test_samples, test_categorical_labels = spiral_data(samples=nb_test_samples, classes=nb_classes)
-test_bianary_labels = test_categorical_labels.reshape(-1, 1)
+test_samples, expected_test_values = sine_data()
+# test_bianary_labels = test_categorical_labels.reshape(-1, 1)
 forward_pass(test_samples)
 debug_str += 'nb test samples: ' + str(nb_test_samples) + '\n'
-debug_str += 'Test loss: ' + str(loss_function.calculate_mean_loss(activation2.outputs, training_binary_labels)) + '\n'
-debug_str += 'Test accuracy: ' + str(calculate_mean_accuracy(test_bianary_labels)) + '\n'
+debug_str += 'Test loss: ' + str(loss_function.calculate_mean_loss(activation2.outputs, expected_test_values)) + '\n'
+debug_str += 'Test accuracy: ' + str(calculate_mean_accuracy(expected_test_values)) + '\n'
 # Write debug string to CLI and logs file
 print(debug_str, end="")
 logs_file.write(debug_str)
@@ -121,8 +117,17 @@ y = np.linspace(-1, 1, 50)
 X, Y = np.meshgrid(x, y)
 bg_samples = np.array(np.c_[X.ravel(), Y.ravel()])
 
-forward_pass(test_samples)
 
-# Convert NN output from confidence outputs to categorical outputes
+import matplotlib.pyplot as plt
 
-# plot_samples(training_samples, test_samples, training_categorical_labels, bg_samples, categorical_bg_outputs, X, Y)
+X_test, y_test = sine_data()
+
+layer1.forward(X_test)
+activation1.forward(layer1.outputs)
+layer2.forward(activation1.outputs)
+activation2.forward(layer2.outputs)
+layer3.forward(activation2.outputs)
+
+plt.plot(X_test, y_test)
+plt.plot(X_test, layer3.outputs)
+plt.show()

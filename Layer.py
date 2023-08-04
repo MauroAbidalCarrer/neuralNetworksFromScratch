@@ -11,7 +11,7 @@ class Layer:
         # because matMul performs the dot product on the rows of the first matrix and the columms of the second instead of row/row,
         # we would need to transpose() the weight matrix for every pass.
         # So instead, we make the matrix of shape (input_size, nb_neurons).
-        self.weights = np.random.randn(input_size, nb_neurons)
+        self.weights = 0.1 * np.random.randn(input_size, nb_neurons)
         # The parameter of the funciton is in parenthesis because it is a tuple of size one.
         # print(self.weights)
         self.biases = np.zeros((1, nb_neurons))
