@@ -15,15 +15,12 @@ class Relu:
     def backward(self, output_gradients):
         self.inputs_gradients = output_gradients.copy()
         self.inputs_gradients[self.inputs <= 0] = 0
+        return self.inputs_gradients
 
 
 
 class SoftMax:
     def forward(self, inputs):
-        # max_log = np.log(sys.float_info.max) - 1
-        # print("max log: ", max_log)
-        # print('exp(max_log): ', np.exp(max_log))
-        # print('min float: ', -sys.float_info.max)
         # exponantiate the input.
         # Clip inputs to log of float max to prevent overflow when exponentiating the inputs
         # inputs = np.clip(inputs, -sys.float_info.max, np.log(sys.float_info.max))
@@ -40,8 +37,20 @@ class SoftMax:
 class Sigmoid:
     def forward(self, inputs_batch):
         self.outputs = 1 / (1 + np.exp(-inputs_batch))
+        return self.outputs
 
-    # Backward pass
     def backward(self, gradients):
         # Derivative - calculates from output of the sigmoid function
         self.inputs_gradients = gradients * (1 - self.outputs) * self.outputs
+        return self.inputs_gradients
+
+
+class Linear:
+    def forward(self, inputs):
+        self.outputs = inputs
+        return self.outputs
+
+    # Backward pass
+    def backward(self, gradients):
+        self.inputs_gradients = gradients
+        return self.inputs_gradients

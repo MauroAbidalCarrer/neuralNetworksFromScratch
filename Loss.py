@@ -68,5 +68,6 @@ class SquaredMean_Loss(Loss):
         self.inputs_gadients = -2 * (expected_outputs - nn_outputs) / output_len
         # Normalize gradient
         self.inputs_gadients = self.inputs_gadients / nn_outputs_len
+        return self.inputs_gadients
 
         
