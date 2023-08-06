@@ -24,7 +24,6 @@ if not os.path.isfile(ZIP_FILE):
     urllib.request.urlretrieve(FASHION_MNIST_DOWNLOAD_URL, ZIP_FILE)
     print('Done!')
 
-print('yes: ' + FASHION_MNIST_DOWNLOAD_URL)
 # Extract the .zip if there is no fashion_mnist_images folder.
 if not os.path.isdir('fashion_mnist_images'):
     print('Unzipping images...', end="", flush=True)
@@ -46,7 +45,7 @@ def load_dataset(dataset_type):
             image = cv2.imread(image_path, cv2.IMREAD_UNCHANGED)
             inputs.append(image)
             expected_outputs.append(label_class)
-    inputs = np.array(inputs).astype('float32') / 255. - 0.5
+    inputs = np.array(inputs).astype('float32') / 127.5 - 1
     # print('Going to return')
     expected_outputs = np.array(expected_outputs)
     print('done!')
@@ -54,7 +53,7 @@ def load_dataset(dataset_type):
 
 training_inputs, training_outputs = load_dataset('train')
 test_inputs, test_outputs = load_dataset('test')
-
+print(training_inputs[0])
 
 # Create model
 model = Model(
