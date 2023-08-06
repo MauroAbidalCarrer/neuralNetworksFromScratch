@@ -3,6 +3,7 @@ import nnfs
 # Sets the random seed to 0 and does some other stuff to make the output repetable...
 nnfs.init()
 from activation_functions import Linear
+from Softmax_And_Categroical_Loss import Softmax_and_Categorical_loss
 
 class Layer:
 
@@ -40,7 +41,8 @@ class Layer:
     # Calculates the gradient of parameters from the output_gradients
     # Also calculates the gradients of the inputs which will be used by the previous layer to calculate its parameters gradients.
     def backward(self, output_gradients):
-        output_gradients = self.activation_function.backward(output_gradients)
+        if not isinstance(self.activation_function, Softmax_and_Categorical_loss):
+            output_gradients = self.activation_function.backward(output_gradients)
         # Gradients on parameters
         self.weights_gradient = np.dot(self.inputs.T, output_gradients)
         self.biases_gradient = np.sum(output_gradients, axis=0, keepdims=True)

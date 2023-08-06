@@ -7,7 +7,7 @@ from Layer import Layer
 from Softmax_And_Categroical_Loss import *
 from AdaptiveMomentum import *
 from Model import Model
-from MeanAccuracy_functions import calculate_mean_regression_accuracy
+from MeanAccuracy_functions import *
 from zipfile import ZipFile
 import os
 import urllib
@@ -45,32 +45,41 @@ def load_dataset(dataset_type):
             image = cv2.imread(image_path, cv2.IMREAD_UNCHANGED)
             inputs.append(image)
             expected_outputs.append(label_class)
-    inputs = np.array(inputs).astype('float32') / 127.5 - 1
-    # print('Going to return')
-    expected_outputs = np.array(expected_outputs)
-    print('done!')
-    return (inputs, expected_outputs.astype('uint8'))
+    # Set the range of the values from [0, 255] to [-1, 1].
+    inputs = np.array(inputs).astype('float32') / 127.5 - 1 
+    # imread returns a matrix of values for each image but we want a vector for each image.
+    # So we flatten the array, setting the shape from (nb_samples, side_length, side_length) to (nb_samples, side_length * side_length).
+    # inputs.reshape(inputs.shape[0], -1) preservs the first dimension's size and flattens the remaining ones.
+    inputs = inputs.reshape(inputs.shape[0], -1)
+    expected_outputs = np.array(expected_outputs).astype('uint8')
+    # Shuffle 
+    indices = np.array(range(len(inputs)))
+    shuffled_indices = np.random.shuffle(indices)
+    print('done.')
+    return (inputs, expected_outputs)
 
-training_inputs, training_outputs = load_dataset('train')
-test_inputs, test_outputs = load_dataset('test')
-print(training_inputs[0])
+training_inputs, expected_training_outputs = load_dataset('train')
+test_inputs, expected_test_outputs = load_dataset('test')
+
+# Preprocess datasets.
+
 
 # Create model
 model = Model(
  layers=[
-    Layer(1, 64, 0, activation_function=Relu()),
+    Layer(INPUT_VECTOR_SIZE, 64, 0, activation_function=Relu()),
     Layer(64, 64, 1, activation_function=Relu()),
-    Layer(64, 1, 2)
+    Layer(64, 10, 2, activation_function=Softmax_and_Categorical_loss())
  ],
- loss_function=SquaredMean_Loss(),
- mean_accuracy_function=calculate_mean_regression_accuracy,
- optimizer=Adam_Optimizer(learning_rate=0.005, decay_rate=1e-3, logs_file=logs_file),
+ loss_function=Softmax_and_Categorical_loss(),
+ mean_accuracy_function=calculate_mean_classification_accuracy,
+ optimizer=Adam_Optimizer(learning_rate=0.001, decay_rate=0.001, logs_file=logs_file),
  logs_file=logs_file
 )
 
 # Training
-# model.train(training_samples, expected_training_values, epochs=10000)
-# model.debug_performances(training_samples, expected_training_values, test_samples, expected_test_values)
+model.train(training_inputs, expected_training_outputs, epochs=10000)
+model.debug_performances(training_inputs, expected_training_outputs, test_inputs, expected_test_outputs)
 
 # Debugging
 logs_file.write('=======================================\n')
