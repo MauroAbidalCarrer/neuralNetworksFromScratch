@@ -56,7 +56,7 @@ def load_dataset(dataset_type):
     indices = np.array(range(len(inputs)))
     shuffled_indices = np.random.shuffle(indices)
     print('done.')
-    return (inputs, expected_outputs)
+    return (inputs[shuffled_indices], expected_outputs[shuffled_indices])
 
 training_inputs, expected_training_outputs = load_dataset('train')
 test_inputs, expected_test_outputs = load_dataset('test')
