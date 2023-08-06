@@ -81,8 +81,8 @@ class Adam_Optimizer:
         corrected_biases_gradients_sum_cache = self.correct_array(layer.biases_gradients_sum_cache, self.gradient_sum_cache_lerp_param)
         
         # Update layer parameters.SADFSDFASDASad
-        layer.weights -= self.learning_rate * corrected_weights_gradient_momentum / (np.sqrt(corrected_weights_gradients_sum_cache) + small_value)
-        layer.biases -= self.learning_rate * corrected_biases_gradient_momemtum / (np.sqrt(corrected_biases_gradients_sum_cache) + small_value)
+        layer.weights -= self.learning_rate * corrected_weights_gradient_momentum / (np.sqrt(corrected_weights_gradients_sum_cache) + SMALL_VALUE)
+        layer.biases -= self.learning_rate * corrected_biases_gradient_momemtum / (np.sqrt(corrected_biases_gradients_sum_cache) + SMALL_VALUE)
 
     def correct_array(self, np_array, lerp_param):
         """

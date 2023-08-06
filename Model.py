@@ -22,7 +22,7 @@ class Model:
         for i in range(self.layers_len - 1, -1, -1):
             gradients = self.layers[i].backward(gradients)
 
-    def train(self, *, training_samples, training_expected_outputs, epochs=10000):
+    def train(self, training_samples, training_expected_outputs, epochs=10000):
         for _ in range(epochs + 1):
             self.forward(training_samples)
             self.backward(training_expected_outputs)
@@ -32,7 +32,7 @@ class Model:
                 self.optimizer.update_layer_params(self.layers[i])
             self.optimizer.post_update_layer_params()
 
-    def debug_performances(self, *, training_inputs, expected_training_values, test_inputs, expected_test_values):
+    def debug_performances(self, training_inputs, expected_training_values, test_inputs, expected_test_values):
         # Debug training data performances.
         debug_str = ""
         debug_str += 'nb training samples: ' + str(len(training_inputs)) + '\n'

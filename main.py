@@ -2,27 +2,33 @@ import numpy as np
 import nnfs
 # Sets the random seed to 0 and does some other stuff to make the output repetable
 nnfs.init()
-from nnfs.datasets import sine_data
 from activation_functions import *
-from Layer import *
-from plot import *
+from Layer import Layer
 from Softmax_And_Categroical_Loss import *
-from SGD import *
-from AdaptiveGradient import *
-from Root_Mean_Square_Propagation import *
 from AdaptiveMomentum import *
 from Model import Model
 from MeanAccuracy_functions import calculate_mean_regression_accuracy
+from zipfile import ZipFile
+import os
+import urllib
+import urllib.request
 
 # logs_file for debugging
 logs_file = open('logs.txt', '+a')
 
-# Create datasets
-nb_training_samples = 100
-training_samples, expected_training_values = sine_data()
 
-nb_test_samples = 100
-test_samples, expected_test_values = sine_data()
+# Download dataset if it's not already there.
+if not os.path.isfile(ZIP_FILE):
+    print(f'Downloading {FASHION_MNIST_DOWNLOAD_URL} and saving as {ZIP_FILE}...')
+    urllib.request.urlretrieve(FASHION_MNIST_DOWNLOAD_URL, ZIP_FILE)
+
+print('Unzipping images...')
+with ZipFile(ZIP_FILE) as zip_images:
+    zip_images.extractall(FOLDER)
+print('Done!')
+
+# Create datasets
+
 
 # Create model
 model = Model(
@@ -38,13 +44,8 @@ model = Model(
 )
 
 # Training
-model.train(training_samples=training_samples, training_expected_outputs=expected_training_values, epochs=10000)
-model.debug_performances(
-    training_inputs=training_samples, 
-    expected_training_values=expected_training_values,
-    test_inputs=test_samples,
-    expected_test_values=expected_test_values
-    )
+# model.train(training_samples, expected_training_values, epochs=10000)
+# model.debug_performances(training_samples, expected_training_values, test_samples, expected_test_values)
 
 # Debugging
 logs_file.write('=======================================\n')
