@@ -46,12 +46,10 @@ def load_dataset(dataset_type):
     inputs = np.array(inputs).astype('float32') / 255. - 0.5
     return (inputs, np.array(expected_outputs).astype('uint8'))
 
-print('Loading training dataset... ', end='')
+print('Loading training dataset... ')
 training_inputs, training_outputs = load_dataset('train')
-print('done.')
-print('Loading test dataset... ', end='')
+print('Loading test dataset... ')
 test_inputs, test_outputs = load_dataset('test')
-print('done.')
 print(training_inputs[0])
 
 
