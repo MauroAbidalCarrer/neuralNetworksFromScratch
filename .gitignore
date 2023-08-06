@@ -1,5 +1,7 @@
 logs.txt
 *fashion_mnist_images*
+small_fashion_training*
+nnfs_chp19.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

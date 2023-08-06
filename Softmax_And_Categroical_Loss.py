@@ -20,12 +20,12 @@ class Softmax_and_Categorical_loss(Loss):
     # Calculate the networks output and the loss.
     def calculate_loss(self, model_output, categorical_labels):
         self.loss.calculate_loss(model_output, categorical_labels)
+        return self.loss.losses
 
     # Calculate gradient with respect to the last layer's outputs.
     def backward(self, model_outputs, categorical_labels):
         samples_batch_size = len(categorical_labels)
-        # If labels are one-hot encoded,
-        # turn them into discrete values
+        # If labels are one-hot encoded, turn them into categorical labels.
         if len(categorical_labels.shape) == 2:
             categorical_labels = np.argmax(categorical_labels, axis=1)
         # Copy so we can safely modify
@@ -34,3 +34,5 @@ class Softmax_and_Categorical_loss(Loss):
         self.input_gradients[range(samples_batch_size), categorical_labels] -= 1
         # Normalize gradient
         self.input_gradients = self.input_gradients / samples_batch_size
+        # print('loss input_gradients.shape: ' + str(self.input_gradients.shape))
+        return self.input_gradients
