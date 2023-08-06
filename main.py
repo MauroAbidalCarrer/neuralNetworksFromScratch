@@ -12,6 +12,7 @@ from zipfile import ZipFile
 import os
 import urllib
 import urllib.request
+import cv2
 
 # logs_file for debugging
 logs_file = open('logs.txt', '+a')
@@ -19,15 +20,39 @@ logs_file = open('logs.txt', '+a')
 
 # Download dataset if it's not already there.
 if not os.path.isfile(ZIP_FILE):
-    print(f'Downloading {FASHION_MNIST_DOWNLOAD_URL} and saving as {ZIP_FILE}...')
+    print('Downloading {FASHION_MNIST_DOWNLOAD_URL} and saving as {ZIP_FILE}...')
     urllib.request.urlretrieve(FASHION_MNIST_DOWNLOAD_URL, ZIP_FILE)
+    print('Done!')
 
-print('Unzipping images...')
-with ZipFile(ZIP_FILE) as zip_images:
-    zip_images.extractall(FOLDER)
-print('Done!')
 
-# Create datasets
+# Extract the .zip if there is no fashion_mnist_images folder.
+if not os.path.isdir('fashion_mnist_images'):
+    print('Unzipping images...')
+    with ZipFile(ZIP_FILE) as zip_images:
+        zip_images.extractall(FOLDER)
+        print('Done!')
+
+# Load datasets.
+def load_dataset(dataset_type):
+    inputs = []
+    expected_outputs = []
+    """type must be either 'train' or 'test'."""
+    for label_class in os.listdir(os.path.join(FOLDER, dataset_type)):
+        folder_path = os.path.join(FOLDER, dataset_type, label_class)
+        for image_name in os.listdir(folder_path):
+            image = cv2.imread(os.path.join(folder_path, image_name), cv2.IMREAD_UNCHANGED)
+            inputs.append(image)
+            expected_outputs.append(expected_outputs)
+    inputs = np.array(inputs).astype('float32') / 255. - 0.5
+    return (inputs, np.array(expected_outputs).astype('uint8'))
+
+print('Loading training dataset... ', end='')
+training_inputs, training_outputs = load_dataset('train')
+print('done.')
+print('Loading test dataset... ', end='')
+test_inputs, test_outputs = load_dataset('test')
+print('done.')
+print(training_inputs[0])
 
 
 # Create model
