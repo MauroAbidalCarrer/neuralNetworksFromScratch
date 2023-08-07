@@ -16,7 +16,7 @@ import cv2
 
 # logs_file for debugging
 logs_file = open('logs.txt', '+a')
-
+logs_file.write('=======================================\n')
 
 # Download dataset if it's not already there.
 if not os.path.isfile(ZIP_FILE):
@@ -75,13 +75,11 @@ model = Model(
  ],
  loss_function=Softmax_and_Categorical_loss(),
  mean_accuracy_function=calculate_mean_classification_accuracy,
- optimizer=Adam_Optimizer(learning_rate=0.001, decay_rate=0.001, logs_file=logs_file),
+ optimizer=Adam_Optimizer(learning_rate=0.001, decay_rate=0.0005, logs_file=logs_file),
  logs_file=logs_file
 )
 
 # Training
-model.train(training_inputs, expected_training_outputs, test_inputs, expected_test_outputs, epochs=1000, batch_size=300, perf_debug_interval=200)
+model.train(training_inputs, expected_training_outputs, test_inputs, expected_test_outputs, epochs=3000, batch_size=300, perf_debug_interval=200)
 
-# Debugging
-logs_file.write('=======================================\n')
 logs_file.close()

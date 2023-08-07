@@ -48,7 +48,7 @@ class Model:
 
     def write_final_performances_logs(self, training_inputs, expected_training_values, test_inputs, expected_test_values):
         if hasattr(self, "nb_epochs"):
-            self.logs_file.write(f"nb training epochs: {self.nb_epochs}")
+            self.logs_file.write(f"nb training epochs: {self.nb_epochs}\n")
         self.logs_file.write(self.get_performance_debug_str(training_inputs, expected_training_values, "training"))
         self.logs_file.write(self.get_performance_debug_str(test_inputs, expected_test_values, "testing"))
         
