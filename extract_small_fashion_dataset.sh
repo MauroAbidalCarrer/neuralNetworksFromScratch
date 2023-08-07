@@ -21,16 +21,16 @@ mkdir -p small_fashion_mnist_images/train/9
 
 echo "Copying fashion_mnist images..."
 
-cp $(ls -1d fashion_mnist_images/train/0/* | head --lines=500) small_fashion_mnist_images/train/0/;
-cp $(ls -1d fashion_mnist_images/train/1/* | head --lines=500) small_fashion_mnist_images/train/1/;
-cp $(ls -1d fashion_mnist_images/train/2/* | head --lines=500) small_fashion_mnist_images/train/2/;
-cp $(ls -1d fashion_mnist_images/train/3/* | head --lines=500) small_fashion_mnist_images/train/3/;
-cp $(ls -1d fashion_mnist_images/train/4/* | head --lines=500) small_fashion_mnist_images/train/4/;
-cp $(ls -1d fashion_mnist_images/train/5/* | head --lines=500) small_fashion_mnist_images/train/5/;
-cp $(ls -1d fashion_mnist_images/train/6/* | head --lines=500) small_fashion_mnist_images/train/6/;
-cp $(ls -1d fashion_mnist_images/train/7/* | head --lines=500) small_fashion_mnist_images/train/7/;
-cp $(ls -1d fashion_mnist_images/train/8/* | head --lines=500) small_fashion_mnist_images/train/8/;
-cp $(ls -1d fashion_mnist_images/train/9/* | head --lines=500) small_fashion_mnist_images/train/9/;
+cp $(ls -1d fashion_mnist_images/train/0/* | head --lines=2000) small_fashion_mnist_images/train/0/;
+cp $(ls -1d fashion_mnist_images/train/1/* | head --lines=2000) small_fashion_mnist_images/train/1/;
+cp $(ls -1d fashion_mnist_images/train/2/* | head --lines=2000) small_fashion_mnist_images/train/2/;
+cp $(ls -1d fashion_mnist_images/train/3/* | head --lines=2000) small_fashion_mnist_images/train/3/;
+cp $(ls -1d fashion_mnist_images/train/4/* | head --lines=2000) small_fashion_mnist_images/train/4/;
+cp $(ls -1d fashion_mnist_images/train/5/* | head --lines=2000) small_fashion_mnist_images/train/5/;
+cp $(ls -1d fashion_mnist_images/train/6/* | head --lines=2000) small_fashion_mnist_images/train/6/;
+cp $(ls -1d fashion_mnist_images/train/7/* | head --lines=2000) small_fashion_mnist_images/train/7/;
+cp $(ls -1d fashion_mnist_images/train/8/* | head --lines=2000) small_fashion_mnist_images/train/8/;
+cp $(ls -1d fashion_mnist_images/train/9/* | head --lines=2000) small_fashion_mnist_images/train/9/;
 
 echo "Copying test dataset..."
 

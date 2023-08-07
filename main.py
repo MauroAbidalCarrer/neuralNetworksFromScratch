@@ -37,8 +37,8 @@ def load_dataset(dataset_type):
     print(f"Loading {dataset_type}ing dataset...", flush=True)
     inputs = []
     expected_outputs = []
-    for label_class in os.listdir(os.path.join(SMALL_FOLDER, dataset_type)):
-        folder_path = os.path.join(SMALL_FOLDER, dataset_type, label_class)
+    for label_class in os.listdir(os.path.join(FOLDER, dataset_type)):
+        folder_path = os.path.join(FOLDER, dataset_type, label_class)
         print(f"loading {folder_path}...")
         for image_name in os.listdir(folder_path):
             image_path = os.path.join(folder_path, image_name)
@@ -62,24 +62,24 @@ def load_dataset(dataset_type):
 
 training_inputs, expected_training_outputs = load_dataset('train')
 test_inputs, expected_test_outputs = load_dataset('test')
-
-# Preprocess datasets.
+print('training size:', training_inputs.shape)
+print('test_inputs size:', test_inputs.shape)
 
 
 # Create model
 model = Model(
  layers=[
     Layer(INPUT_VECTOR_SIZE, 64, 0, L2_biases_multiplier=0.01, L2_weights_multiplier=0.01, activation_function=Relu()),
-    Layer(64, 64, 1, L2_biases_multiplier=0.01, L2_weights_multiplier=0.01, activation_function=Relu()),
-    Layer(64, 10, 2, L2_biases_multiplier=0.01, L2_weights_multiplier=0.01, activation_function=Softmax_and_Categorical_loss())
+    Layer(64, 64, 1, activation_function=Relu()),
+    Layer(64, 10, 2, activation_function=Softmax_and_Categorical_loss())
  ],
  loss_function=Softmax_and_Categorical_loss(),
  mean_accuracy_function=calculate_mean_classification_accuracy,
- optimizer=Adam_Optimizer(learning_rate=0.001, decay_rate=0.0005, logs_file=logs_file),
+ optimizer=Adam_Optimizer(learning_rate=0.004, decay_rate=35e-5, momentum_lerp_param=0.1, logs_file=logs_file),
  logs_file=logs_file
 )
 
 # Training
-model.train(training_inputs, expected_training_outputs, test_inputs, expected_test_outputs, epochs=3000, batch_size=300, perf_debug_interval=200)
+model.train(training_inputs, expected_training_outputs, test_inputs, expected_test_outputs, epochs=40, batch_size=123, perf_debug_interval=1)
 
 logs_file.close()

@@ -11,7 +11,7 @@ class Adam_Optimizer:
         Hencce the name Adaptive momentumm, shorten to Adam. 
         In addition, Adam corrects the momentum and gradient_sum_cache during the beggining of the training.
     """
-    def __init__(self, learning_rate=1, decay_rate=0., logs_file=None, gradient_sum_cache_lerp_param=0.001, momentum=0.3, momentum_lerp_param=0.01):
+    def __init__(self, learning_rate=1, decay_rate=0., logs_file=None, gradient_sum_cache_lerp_param=0.001, momentum_lerp_param=0.01):
         """
         Args:
             weights_gradients_sum_cache (float, optional):
@@ -31,7 +31,6 @@ class Adam_Optimizer:
         self.decay_rate = decay_rate
         self.nb_update_iterations = 0
         self.gradient_sum_cache_lerp_param = gradient_sum_cache_lerp_param
-        self.momentum = momentum
         self.momentum_lerp_param = momentum_lerp_param
         # Debugging
         debug_str = 'Optimizer: ' + self.__class__.__name__ + '\n'
@@ -39,7 +38,7 @@ class Adam_Optimizer:
         debug_str += 'learning_decay_rate:\t' + str(decay_rate) + '\n'
         debug_str += 'momentum_lerp_param:\t' + str(momentum_lerp_param) + '\n'
         debug_str += 'gradient_sum_cache_lerp_param:\t' + str(gradient_sum_cache_lerp_param) + '\n'
-        print(debug_str, end="")
+        # print(debug_str, end="")
         if logs_file:
             logs_file.write(debug_str)
 
