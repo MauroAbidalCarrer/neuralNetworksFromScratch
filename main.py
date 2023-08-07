@@ -69,9 +69,9 @@ test_inputs, expected_test_outputs = load_dataset('test')
 # Create model
 model = Model(
  layers=[
-    Layer(INPUT_VECTOR_SIZE, 64, 0, activation_function=Relu()),
-    Layer(64, 64, 1, activation_function=Relu()),
-    Layer(64, 10, 2, activation_function=Softmax_and_Categorical_loss())
+    Layer(INPUT_VECTOR_SIZE, 64, 0, L2_biases_multiplier=0.01, L2_weights_multiplier=0.01, activation_function=Relu()),
+    Layer(64, 64, 1, L2_biases_multiplier=0.01, L2_weights_multiplier=0.01, activation_function=Relu()),
+    Layer(64, 10, 2, L2_biases_multiplier=0.01, L2_weights_multiplier=0.01, activation_function=Softmax_and_Categorical_loss())
  ],
  loss_function=Softmax_and_Categorical_loss(),
  mean_accuracy_function=calculate_mean_classification_accuracy,
@@ -81,7 +81,6 @@ model = Model(
 
 # Training
 model.train(training_inputs, expected_training_outputs, test_inputs, expected_test_outputs, epochs=1000, batch_size=300, perf_debug_interval=200)
-model.debug_performances(training_inputs, expected_training_outputs, test_inputs, expected_test_outputs)
 
 # Debugging
 logs_file.write('=======================================\n')

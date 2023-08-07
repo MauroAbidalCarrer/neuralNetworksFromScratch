@@ -5,3 +5,4 @@ FOLDER = 'fashion_mnist_images'
 SMALL_FOLDER = 'small_fashion_mnist_images'
 # Corresponds to the number of pixels in an fashion MNIST image.
 INPUT_VECTOR_SIZE = 784
+FLOAT_PRINTING_PRECISION = 3
