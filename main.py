@@ -69,17 +69,17 @@ print('test_inputs size:', test_inputs.shape)
 # Create model
 model = Model(
  layers=[
-    Layer(INPUT_VECTOR_SIZE, 64, 0, L2_biases_multiplier=0.01, L2_weights_multiplier=0.01, activation_function=Relu()),
+    Layer(INPUT_VECTOR_SIZE, 64, 0, L2_biases_multiplier=0.015, L2_weights_multiplier=0.01, activation_function=Relu()),
     Layer(64, 64, 1, activation_function=Relu()),
     Layer(64, 10, 2, activation_function=Softmax_and_Categorical_loss())
  ],
  loss_function=Softmax_and_Categorical_loss(),
  mean_accuracy_function=calculate_mean_classification_accuracy,
- optimizer=Adam_Optimizer(learning_rate=0.004, decay_rate=35e-5, momentum_lerp_param=0.1, logs_file=logs_file),
+ optimizer=Adam_Optimizer(learning_rate=0.004, decay_rate=4e-4, momentum_lerp_param=0.01, logs_file=logs_file),
  logs_file=logs_file
 )
 
 # Training
-model.train(training_inputs, expected_training_outputs, test_inputs, expected_test_outputs, epochs=40, batch_size=123, perf_debug_interval=1)
+model.train(training_inputs, expected_training_outputs, test_inputs, expected_test_outputs, epochs=50, batch_size=123, perf_debug_interval=1)
 
 logs_file.close()
