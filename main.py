@@ -7,6 +7,7 @@ from Layer import Layer
 from Softmax_And_Categroical_Loss import *
 from AdaptiveMomentum import *
 from Model import Model
+from Model_beta import Model_beta
 from MeanAccuracy_functions import *
 from zipfile import ZipFile
 import os
@@ -67,15 +68,15 @@ print('test_inputs size:', test_inputs.shape)
 
 
 # Create model
-model = Model(
+model = Model_beta(
  layers=[
-    Layer(INPUT_VECTOR_SIZE, 64, 0, L2_biases_multiplier=0.015, L2_weights_multiplier=0.01, activation_function=Relu()),
-    Layer(64, 64, 1, activation_function=Relu()),
-    Layer(64, 10, 2, activation_function=Softmax_and_Categorical_loss())
+    Layer(INPUT_VECTOR_SIZE, 64, 0, L2_biases_multiplier=0.015, L2_weights_multiplier=0.01, logs_file=logs_file, activation_function=Relu()),
+    Layer(64, 64, 1, L2_biases_multiplier=0.015, L2_weights_multiplier=0.01, logs_file=logs_file, activation_function=Relu()),
+    Layer(64, 10, 2, L2_biases_multiplier=0.015, L2_weights_multiplier=0.01, logs_file=logs_file, activation_function=Softmax_and_Categorical_loss())
  ],
  loss_function=Softmax_and_Categorical_loss(),
  mean_accuracy_function=calculate_mean_classification_accuracy,
- optimizer=Adam_Optimizer(learning_rate=0.004, decay_rate=4e-4, momentum_lerp_param=0.01, logs_file=logs_file),
+ optimizer=Adam_Optimizer(learning_rate=0.004, decay_rate=6e-4, momentum_lerp_param=0.01, logs_file=logs_file),
  logs_file=logs_file
 )
 

@@ -18,6 +18,7 @@ class Layer:
         # print(self.weights)
         self.biases = np.zeros((1, nb_neurons))
         self.activation_function = activation_function
+
         self.L2_weights_multiplier = L2_weights_multiplier
         self.L2_biases_multiplier = L2_biases_multiplier
         if logs_file and (L2_weights_multiplier != 0 or L2_biases_multiplier != 0):
@@ -25,7 +26,6 @@ class Layer:
             debug_str += '\tL2_weights_multiplier: ' + str(self.L2_weights_multiplier) + '\n'
             debug_str += '\tL2_biases_multiplier: ' + str(self.L2_biases_multiplier) + '\n'
             logs_file.write(debug_str)
-            print(debug_str)
 
     def forward(self, inputs):
         self.inputs = inputs
@@ -42,10 +42,24 @@ class Layer:
         # Gradients on parameters
         self.weights_gradient = np.dot(self.inputs.T, output_gradients)
         self.biases_gradient = np.sum(output_gradients, axis=0, keepdims=True)
-        # Gradient on values
+        # Gradient on inputs
         self.inputs_gradients = np.dot(output_gradients, self.weights.T)
 
         # L2 regularization
         self.weights_gradient += 2 * self.weights * self.L2_weights_multiplier
         self.biases_gradient += 2 * self.biases * self.L2_weights_multiplier
         return self.inputs_gradients
+    
+    def calculate_params_gradients(self, outputs_gradients):
+        if not isinstance(self.activation_function, Softmax_and_Categorical_loss):
+            outputs_gradients = self.activation_function.backward(outputs_gradients)
+        # Gradients on parameters
+        self.weights_gradient = np.dot(self.inputs.T, outputs_gradients)
+        self.biases_gradient = np.sum(outputs_gradients, axis=0, keepdims=True)
+
+        # L2 regularization
+        self.weights_gradient += 2 * self.weights * self.L2_weights_multiplier
+        self.biases_gradient += 2 * self.biases * self.L2_weights_multiplier
+
+    def calculate_inputs_gradients(self, outputs_gradients):
+        return np.dot(outputs_gradients, self.weights.T)

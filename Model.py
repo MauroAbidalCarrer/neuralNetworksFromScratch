@@ -3,7 +3,7 @@ from Layer import Layer
 
 class Model:
 
-    def __init__(self, *, layers, loss_function, mean_accuracy_function, optimizer, logs_file=None):
+    def __init__(self, *, layers, loss_function, mean_accuracy_function, optimizer, logs_file):
         self.layers = layers
         self.layers_len = len(layers)
         self.loss_function = loss_function
@@ -32,6 +32,8 @@ class Model:
         for i in range(self.layers_len):
             self.optimizer.update_layer_params(self.layers[i])
         self.optimizer.post_update_layer_params()
+
+
 
     def get_performances(self, inputs, expected_outputs):
         self.forward(inputs)
